@@ -1,0 +1,45 @@
+package com.back.boundedContext.post.domain;
+
+import com.back.boundedContext.member.domain.Member;
+import com.back.global.jpa.entity.BaseIdAndTime;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.FetchType.LAZY;
+
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+public class Post extends BaseIdAndTime {
+    @ManyToOne(fetch = LAZY)
+    private Member author;
+
+    private String title;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String content;
+
+    @OneToMany(mappedBy = "post", cascade =
+            {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<PostComment> comments = new ArrayList<>();
+
+    public Post(Member author, String title, String content) {
+        this.author = author;
+        this.title = title;
+        this.content = content;
+    }
+
+    public void addComment(Member author, String content) {
+        PostComment postComment = new PostComment(this, author, content);
+        comments.add(postComment);
+    }
+
+    public boolean hasComments() {
+        return !comments.isEmpty();
+    }
+}
