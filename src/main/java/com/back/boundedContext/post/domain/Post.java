@@ -13,6 +13,7 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor
+@Table(name = "POST_POST")
 @Getter
 public class Post extends BaseIdAndTime {
     @ManyToOne(fetch = FetchType.LAZY)
