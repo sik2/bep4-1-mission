@@ -17,7 +17,7 @@ public class CashSyncMemberUseCase {
 
     // todo : 동시성 문제 해결
     public CashMember syncMember(MemberDto memberDto) {
-        boolean isNew = cashMemberRepository.existsById(memberDto.memberId());
+        boolean isNew = !cashMemberRepository.existsById(memberDto.memberId());
 
         CashMember _member = cashMemberRepository.save(CashMember.from(memberDto));
 
