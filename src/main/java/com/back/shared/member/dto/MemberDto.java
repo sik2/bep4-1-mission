@@ -15,6 +15,7 @@ public class MemberDto {
     private final String username;
     private final String password;
     private final String nickname;
+    private int activityScore;
 
     public MemberDto (Member member) {
         this(
@@ -23,7 +24,8 @@ public class MemberDto {
                 member.getModifyDate(),
                 member.getUsername(),
                 member.getPassword(),
-                member.getNickname()
+                member.getNickname(),
+                member.getActivityScore()
         );
     }
 }
