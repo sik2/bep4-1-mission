@@ -17,7 +17,7 @@ import java.util.List;
 @Getter
 public class Post extends BaseIdAndTime {
     @ManyToOne(fetch = FetchType.LAZY)
-    Member author;
+    PostMember author;
     String title;
     @Column(columnDefinition = "LONGTEXT")
     String content;
@@ -25,7 +25,7 @@ public class Post extends BaseIdAndTime {
     @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<PostComment> comments = new ArrayList<>();
 
-    public Post(Member member, String title, String content) {
+    public Post(PostMember member, String title, String content) {
         this.author = member;
         this.title = title;
         this.content = content;
