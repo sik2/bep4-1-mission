@@ -82,4 +82,14 @@ public class MarketFacade {
     public RsData<Order> createOrder(Cart cart) {
         return marketCreateOrderUseCase.createOrder(cart);
     }
+
+    @Transactional(readOnly = true)
+    public Optional<Order> findOrderById(int id) {
+        return marketSupport.findOrderById(id);
+    }
+
+    @Transactional
+    public void requestPayment(Order order, long pgPaymentAmount) {
+        order.requestPayment(pgPaymentAmount);
+    }
 }
