@@ -71,7 +71,7 @@ public class Order extends BaseIdAndTime {
 
         publishEvent(
                 new MarketOrderPaymentRequestedEvent(
-                        new OrderDto(this),
+                        toDto(),
                         pgPaymentAmount
                 )
         );
@@ -87,5 +87,19 @@ public class Order extends BaseIdAndTime {
 
     public boolean isPaymentInProgress() {
         return requestPaymentDate != null && paymentDate == null && cancelDate == null;
+    }
+
+    public OrderDto toDto() {
+        return new OrderDto(
+                getId(),
+                getCreateDate(),
+                getModifyDate(),
+                buyer.getId(),
+                buyer.getNickname(),
+                price,
+                salePrice,
+                requestPaymentDate,
+                paymentDate
+        );
     }
 }
