@@ -1,8 +1,8 @@
-package com.back.service;
+package com.back.boundedContext.Post.service;
 
-import com.back.entity.Member;
-import com.back.entity.Post;
-import com.back.repository.PostRepository;
+import com.back.boundedContext.Post.entity.Post;
+import com.back.boundedContext.Post.repository.PostRepository;
+import com.back.boundedContext.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class PostService {
 
         author.increaseActivityScore(3);
 
-        return postRepository.save(post); 
+        return postRepository.save(post);
     }
 
     public Optional<Post> findById(int id) {
