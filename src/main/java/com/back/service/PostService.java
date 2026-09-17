@@ -22,7 +22,7 @@ public class PostService {
 
         author.increaseActivityScore(3);
 
-        return postRepository.save(post);
+        return postRepository.save(post); 
     }
 
     public Optional<Post> findById(int id) {
