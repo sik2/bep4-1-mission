@@ -1,7 +1,7 @@
 package com.back.boundedContext.member.in;
 
+import com.back.boundedContext.member.app.MemberFacade;
 import com.back.boundedContext.member.domain.Member;
-import com.back.boundedContext.member.app.MemberService;
 import com.back.shared.post.event.PostCommentCreatedEvent;
 import com.back.shared.post.event.PostCreatedEvent;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,19 +16,19 @@ import static org.springframework.transaction.event.TransactionPhase.AFTER_COMMI
 @RequiredArgsConstructor
 public class MemberEventListener {
 
-    private final MemberService memberService;
+    private final MemberFacade memberFacade;
 
     @Transactional(propagation = REQUIRES_NEW)
     @TransactionalEventListener(phase = AFTER_COMMIT)
     public void handle (PostCreatedEvent event) {
-        Member member = memberService.findById(event.getPost().getAuthorId()).get();
+        Member member = memberFacade.findById(event.getPost().getAuthorId()).get();
         member.increaseActivityScore(3);
     }
 
     @Transactional(propagation = REQUIRES_NEW)
     @TransactionalEventListener(phase = AFTER_COMMIT)
     public void handle (PostCommentCreatedEvent event) {
-        Member member = memberService.findById(event.getPostComment().getAuthorId()).get();
+        Member member = memberFacade.findById(event.getPostComment().getAuthorId()).get();
         member.increaseActivityScore(1);
     }
 }
