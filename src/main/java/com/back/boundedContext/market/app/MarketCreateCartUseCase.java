@@ -2,7 +2,7 @@ package com.back.boundedContext.market.app;
 
 import com.back.boundedContext.market.domain.Cart;
 import com.back.boundedContext.market.domain.MarketMember;
-import com.back.boundedContext.market.in.CartRepository;
+import com.back.boundedContext.market.out.CartRepository;
 import com.back.boundedContext.market.out.MarketMemberRepository;
 import com.back.global.rsData.RsData;
 import com.back.shared.market.dto.MarketMemberDto;
