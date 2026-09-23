@@ -1,0 +1,199 @@
+package com.back.boundedContext.market.in;
+
+import java.util.List;
+
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.back.boundedContext.market.app.MarketFacade;
+import com.back.boundedContext.market.domain.Cart;
+import com.back.boundedContext.market.domain.MarketMember;
+import com.back.boundedContext.market.domain.Order;
+import com.back.boundedContext.market.domain.Product;
+import com.back.shared.post.dto.PostDto;
+import com.back.shared.post.out.PostApiClient;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Configuration
+public class MarketDataInit {
+    private final MarketDataInit self;
+    private final MarketFacade marketFacade;
+    private final PostApiClient postApiClient;
+
+    public MarketDataInit(
+            @Lazy MarketDataInit self,
+            MarketFacade marketFacade,
+            PostApiClient postApiClient
+    ) {
+        this.self = self;
+        this.marketFacade = marketFacade;
+        this.postApiClient = postApiClient;
+    }
+
+    @Bean
+    @org.springframework.core.annotation.Order(3)
+    public ApplicationRunner marketDataInitApplicationRunner() {
+        return args -> {
+            self.makeBaseProducts();
+            self.makeBaseCartItems();
+            self.makeBaseOrders();
+            self.makeBasePaidOrders();
+        };
+    }
+
+    @Transactional
+    public void makeBaseProducts() {
+        if (marketFacade.productsCount() > 0) return;
+
+        List<PostDto> posts = postApiClient.getItems();
+
+        PostDto post1 = posts.get(5);
+        PostDto post2 = posts.get(4);
+        PostDto post3 = posts.get(3);
+        PostDto post4 = posts.get(2);
+        PostDto post5 = posts.get(1);
+        PostDto post6 = posts.get(0);
+
+        MarketMember user1MarketMember = marketFacade.findMemberByUsername("user1").get();
+        MarketMember user2MarketMember = marketFacade.findMemberByUsername("user2").get();
+        MarketMember user3MarketMember = marketFacade.findMemberByUsername("user3").get();
+
+        Product product1 = marketFacade.createProduct(
+                user1MarketMember,
+                post1.getModelTypeCode(),
+                post1.id(),
+                post1.title(),
+                post1.content(),
+                10_000L,
+                10_000L
+        );
+
+        Product product2 = marketFacade.createProduct(
+                user1MarketMember,
+                post2.getModelTypeCode(),
+                post2.id(),
+                post2.title(),
+                post2.content(),
+                15_000L,
+                15_000L
+        );
+
+        Product product3 = marketFacade.createProduct(
+                user1MarketMember,
+                post3.getModelTypeCode(),
+                post3.id(),
+                post3.title(),
+                post3.content(),
+                20_000L,
+                20_000L
+        );
+
+        Product product4 = marketFacade.createProduct(
+                user2MarketMember,
+                post4.getModelTypeCode(),
+                post4.id(),
+                post4.title(),
+                post4.content(),
+                25_000L,
+                25_000L
+        );
+
+        Product product5 = marketFacade.createProduct(
+                user2MarketMember,
+                post5.getModelTypeCode(),
+                post5.id(),
+                post5.title(),
+                post5.content(),
+                30_000L,
+                30_000L
+        );
+
+        Product product6 = marketFacade.createProduct(
+                user3MarketMember,
+                post6.getModelTypeCode(),
+                post6.id(),
+                post6.title(),
+                post6.content(),
+                35_000L,
+                35_000L
+        );
+    }
+
+    @Transactional
+    public void makeBaseCartItems() {
+        MarketMember user1Member = marketFacade.findMemberByUsername("user1").get();
+        MarketMember user2Member = marketFacade.findMemberByUsername("user2").get();
+        MarketMember user3Member = marketFacade.findMemberByUsername("user3").get();
+
+        Cart cart1 = marketFacade.findCartByBuyer(user1Member).get();
+        Cart cart2 = marketFacade.findCartByBuyer(user2Member).get();
+        Cart cart3 = marketFacade.findCartByBuyer(user3Member).get();
+
+        Product product1 = marketFacade.findProductById(1).get();
+        Product product2 = marketFacade.findProductById(2).get();
+        Product product3 = marketFacade.findProductById(3).get();
+        Product product4 = marketFacade.findProductById(4).get();
+        Product product5 = marketFacade.findProductById(5).get();
+        Product product6 = marketFacade.findProductById(6).get();
+
+        if (cart1.hasItems()) return;
+
+        cart1.addItem(product1);
+        cart1.addItem(product2);
+        cart1.addItem(product3);
+        cart1.addItem(product4);
+
+        cart2.addItem(product1);
+        cart2.addItem(product2);
+        cart2.addItem(product3);
+
+        cart3.addItem(product1);
+        cart3.addItem(product2);
+    }
+
+    @Transactional
+    public void makeBaseOrders() {
+        if (marketFacade.ordersCount() > 0) return;
+
+        MarketMember user1Member = marketFacade.findMemberByUsername("user1").get();
+        MarketMember user2Member = marketFacade.findMemberByUsername("user2").get();
+        MarketMember user3Member = marketFacade.findMemberByUsername("user3").get();
+
+        Cart cart1 = marketFacade.findCartByBuyer(user1Member).get();
+        Cart cart2 = marketFacade.findCartByBuyer(user2Member).get();
+        Cart cart3 = marketFacade.findCartByBuyer(user3Member).get();
+
+        Order order1 = marketFacade.createOrder(cart1).getData();
+        Order order2 = marketFacade.createOrder(cart2).getData();
+        Order order3 = marketFacade.createOrder(cart3).getData();
+
+        // 주문 생성 때문에 cart1이 비어있기 때문에 다시 아이템 추가
+        Product product1 = marketFacade.findProductById(1).get();
+        Product product2 = marketFacade.findProductById(2).get();
+        Product product3 = marketFacade.findProductById(3).get();
+        Product product4 = marketFacade.findProductById(4).get();
+        Product product5 = marketFacade.findProductById(5).get();
+        Product product6 = marketFacade.findProductById(6).get();
+
+        cart1.addItem(product1);
+        cart1.addItem(product2);
+        cart1.addItem(product3);
+        cart1.addItem(product4);
+    }
+
+    @Transactional
+    public void makeBasePaidOrders() {
+        Order order1 = marketFacade.findOrderById(1).get();
+
+        if (order1.isPaid()) {
+            return;
+        }
+
+        marketFacade.requestPayment(order1, 0);
+    }
+}
