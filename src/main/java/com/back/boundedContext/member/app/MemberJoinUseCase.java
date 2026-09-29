@@ -26,6 +26,12 @@ public class MemberJoinUseCase {
 
         eventPublisher.publish(new MemberJoinedEvent(member.toDto()));
 
+        outboxService.save(
+                MEMBER_JOINED_TOPIC,
+                MemberJoinedEvent.class.getName(),
+                event
+        );
+
         return new RsData<>("201-1", "%d번 회원이 생성되었습니다.".formatted(member.getId()), member);
     }
 }
