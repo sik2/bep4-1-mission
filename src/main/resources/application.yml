@@ -1,0 +1,79 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: back
+  config:
+    import: optional:file:.env[.properties]
+  kafka:
+    bootstrap-servers: localhost:19092
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+      properties:
+        spring.json.add.type.headers: true
+
+    consumer:
+      group-id: back
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.back.*
+        spring.json.use.type.headers: true
+  profiles:
+    active: dev
+
+  output:
+    ansi:
+      enabled: always
+
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+  datasource:
+    url: jdbc:h2:./db_dev;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+        default_batch_fetch_size: 100
+
+logging:
+  level:
+    com.back: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.orm.jdbc.extract: TRACE
+    org.springframework.transaction.interceptor: TRACE
+
+  datasource:
+    url: jdbc:h2:./db_dev;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+custom:
+  global:
+    internalBackUrl: http://localhost:${server.port:8080}
+    holdingMemberId: 2
+  payout:
+    readyWaitingDays: 14
+  member:
+    password:
+      changeDays: 90
+  market:
+    toss:
+      payments:
+        secretKey: ${TOSS_PAYMENTS_SECRET_KEY:}
+
+    product:
+      payoutRate: 90
